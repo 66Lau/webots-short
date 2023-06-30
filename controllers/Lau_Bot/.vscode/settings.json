@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "bsp_sensor.h": "c",
+        "assert.h": "c",
+        "bsp_motor.h": "c",
+        "app_chassis.h": "c"
+    }
+}

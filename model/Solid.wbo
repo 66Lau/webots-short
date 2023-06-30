@@ -1,0 +1,27 @@
+#VRML_OBJ R2022a utf8
+DEF SLOPE Solid {
+  translation 0 -0.26 -0.054
+  rotation 1 0 0 0.155
+  children [
+    DEF slope Shape {
+      appearance PBRAppearance {
+        baseColor 0.501961 0.501961 0.501961
+        roughness 1
+        metalness 0
+        emissiveColor 0.501961 0.501961 0.501961
+      }
+      geometry DEF BOX Box {
+        size 0.465 1.3 0.26
+      }
+    }
+  ]
+  boundingObject DEF slope Shape {
+    appearance PBRAppearance {
+      baseColor 0.501961 0.501961 0.501961
+      roughness 1
+      metalness 0
+      emissiveColor 0.501961 0.501961 0.501961
+    }
+    geometry USE BOX
+  }
+}
