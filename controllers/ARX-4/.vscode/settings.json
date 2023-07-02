@@ -1,7 +1,0 @@
-{
-    "files.associations": {
-        "types.h": "c",
-        "assert.h": "c",
-        "accelerometer.h": "c"
-    }
-}
