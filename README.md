@@ -79,6 +79,8 @@ The simulation of jump-able legged which modified from the open source model of 
 |整车速度环 |待更新（目前直接控制重心角度）
 |飞坡 |待更新
 
+**位控功能初步实现后考虑力控实现**
+
 
 
  </center>
