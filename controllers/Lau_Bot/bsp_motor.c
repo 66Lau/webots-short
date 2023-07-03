@@ -2,6 +2,7 @@
 
 MOTOR motor[6];
 POSITION_SENSOR position_sensor[6];
+double robbot_speed_forward;
 
 void motor_init(double angle_set){
   //每加一个电机, (1)在宏定义中修改MOTOR_NUM 赋值, (2)增加代号的数量, (3)在这里写上name
@@ -68,11 +69,13 @@ void velocity_detect()//轮询所有电机传感器
     position_sensor[i].position_last = position_sensor[i].position;
     //printf("motor:%s position:%f\n",position_sensor[i].name, position_sensor[i].position);
     motor[i].torque_fb = wb_motor_get_torque_feedback(motor[i].ID);
+    //printf("motor_speed = %f\n",position_sensor[i].w);
 
   }
   //需满足纯滚动条件
 //   double Z_x_middle = 
 //   (position_sensor[WHEEL_R].position + position_sensor[WHEEL_L].position) * radius_of_wheel / 2;
-                  
+  robbot_speed_forward = (-position_sensor[WHEEL_R].w + position_sensor[WHEEL_L].w)/2;
+  printf("robbot_speed_forward = %f\n",robbot_speed_forward);      
 };
 

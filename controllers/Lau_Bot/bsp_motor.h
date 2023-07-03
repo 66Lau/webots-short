@@ -50,6 +50,7 @@ typedef struct position_sensor_feature
 
 extern MOTOR motor[6];
 extern POSITION_SENSOR position_sensor[6];
+extern double robbot_speed_forward;
 
 void motor_init(double angle_set);
 void position_sensor_init();

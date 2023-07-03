@@ -4,8 +4,8 @@ WorldInfo {
   coordinateSystem "NUE"
 }
 Viewpoint {
-  orientation 0.4395262171865546 0.5439643058623683 0.7147863585389338 4.026092932812664
-  position 10.842556158698306 0.8745629972440673 6.661962304410525
+  orientation 0.5874935584115105 0.5589442786129284 0.5851774194471742 4.186979475701193
+  position 9.816257756158654 0.4104378938613381 6.600382130217529
 }
 TexturedBackground {
 }
@@ -88,7 +88,7 @@ Robot {
               anchor 0 0 -0.15
             }
             endPoint DEF ref1 Solid {
-              translation 0.00035380720330789215 -0.009983687139877065 -0.1497260344460552
+              translation 0.00035380720330788814 -0.009983687139876808 -0.1497260344460552
               rotation 3.966111603859827e-06 -0.9999999999921196 1.7495902434468559e-07 3.8033101748770606
               children [
                 Transform {
@@ -202,7 +202,7 @@ Robot {
               anchor 0 0 -0.15
             }
             endPoint DEF ref2 Solid {
-              translation 0 -0.010000000000000293 -0.15
+              translation 0 -0.01000000000000055 -0.15
               rotation 0 -1 0 2.472487718338473
               children [
                 Transform {
@@ -316,7 +316,7 @@ Robot {
               anchor 0 0 -0.15
             }
             endPoint DEF ref1 Solid {
-              translation 0 0.010000000000000262 -0.15
+              translation 0 0.010000000000000519 -0.15
               rotation 0 -0.9999999999999999 0 2.4791021949373055
               children [
                 DEF J5 HingeJoint {
@@ -337,7 +337,7 @@ Robot {
                     }
                   ]
                   endPoint DEF wheel Solid {
-                    translation 0 0.019999999999999026 -0.288
+                    translation 0 0.019999999999998512 -0.288
                     rotation -0.9999999998695331 1.1426766730038652e-05 1.141767091065396e-05 1.5700000001304102
                     children [
                       DEF wheel Transform {
@@ -462,7 +462,7 @@ Robot {
               anchor 0 0 -0.15
             }
             endPoint Solid {
-              translation 0 0.009999999999999506 -0.15
+              translation 0 0.009999999999999249 -0.15
               rotation 0 1 0 2.4789660461000644
               children [
                 DEF J5 HingeJoint {

@@ -5,6 +5,7 @@
 #include <webots/accelerometer.h>
 #include <webots/gyro.h>
 #include <webots/inertial_unit.h>
+#include <webots/gyro.h>
 #include <webots/types.h>
 #include <webots/robot.h>
 #include <stdio.h>
@@ -35,14 +36,17 @@ typedef struct accelerometer_feature
 //gyro参数(角速度)
 typedef struct gyro_feature
 {
-  WbDeviceTag gyro_ID;
-  const char *gyro_name;
+  WbDeviceTag ID;
+  const char *name;
   double gyro_value[3];
 }GYRO;
 
 extern IMU imu;
+extern GYRO gyro;
 
 void imu_init();
 void imu_angle_detect();
+void gyro_init();
+void gyro_speed_detect();
 
 #endif

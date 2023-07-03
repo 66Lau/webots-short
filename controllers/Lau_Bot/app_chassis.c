@@ -17,15 +17,20 @@
 
 PidTypeDef chassis_Balance_pid;
 PidTypeDef chassis_roll_pid;
+PidTypeDef chassis_speed_pid;
+double time_start = 0;
+double time_now = 0;
 fp32 balance_pid[3] = {220, 0, 3};
 fp32 height_pid[3] = {0.5, 1, 0};
+fp32 speed_pid[3] = {0.25, 0, 0.01};
 // 两组关节角度（一组两个关节）
 fp32 set_joint_motor_angle_right[2] = {0, 0};
 fp32 set_joint_motor_angle_left[2] = {0, 0};
 
 double set_x = 0;
 double set_y = 0.25;
-double diff_vel = 4;
+double set_v = 0; //m/s
+double diff_vel = 8;
 
 //暂时debug用
 int debug_jump2 = 0;
@@ -43,6 +48,7 @@ void chassis_wheel_init()
 {
 PID_Init(&chassis_Balance_pid, PID_POSITION, balance_pid, (fp32) 100, (fp32) 100);
 PID_Init(&chassis_roll_pid, PID_POSITION, height_pid, (fp32) 100, (fp32) 100);
+PID_Init(&chassis_speed_pid, PID_POSITION, speed_pid, (fp32) 100, (fp32) 100);
 
 
 }
@@ -61,6 +67,8 @@ void chassis_task()
 
     PID_Calc(&chassis_Balance_pid, (fp32)imu.angle_value[pitch], (fp32)0);
     PID_Calc(&chassis_roll_pid, (fp32)imu.angle_value[roll], (fp32)0);
+    PID_Calc(&chassis_speed_pid, robbot_speed_forward, (fp32)set_v);
+
     wb_motor_set_position(motor[WHEEL_L].ID, INFINITY);
     wb_motor_set_position(motor[WHEEL_R].ID, INFINITY);
     // 动力轮平衡环+转速环
@@ -69,7 +77,9 @@ void chassis_task()
     // printf("wheel_left_speed%f\n",wb_motor_get_velocity(motor[WHEEL_R].ID));
 
     // roll轴平衡控制
-    set_x = -0.03 * keyboard.velocity_forward + 0.03 * keyboard.velocity_backward;
+    set_v = 0.3 * keyboard.velocity_forward - 0.3 * keyboard.velocity_backward;
+    set_x = -chassis_speed_pid.out;
+    //set_x = -0.03 * keyboard.velocity_forward + 0.03 * keyboard.velocity_backward;
     set_y = set_y + keyboard.vertical_up*0.01 - keyboard.vertical_down*0.01;
     double set_y_right = set_y - chassis_roll_pid.out;
     double set_y_left = set_y + chassis_roll_pid.out;
@@ -84,26 +94,14 @@ void chassis_task()
     if (set_y_left>0.35)
         set_y_left = 0.35;
 
-    //跳跃demo，仅做展示，并不完善，待加入轨迹跟踪
-    if (keyboard.jump == 1)
-    {
-        printf("=========== jump ==========\n");
-        if(debug_jump2 == 0)
-        {
-            set_y = 0.45; debug_jump2 = 1;
-        }
-        else if (debug_jump2 == 1)
-        {
-            set_y = 0.23; debug_jump2 = 0;
-        }
-
-
-    }
+    // 跳跃
+    chassis_jump_task();
 
     // 逆运动学解算
     legs_Inversekinematics(set_joint_motor_angle_right, set_x, set_y_right, 0.15, 0.15, 0.288);
     legs_Inversekinematics(set_joint_motor_angle_left, set_x, set_y_left, 0.15, 0.15, 0.288);
     // 五连杆关节位置控制
+    joint_motor_limit();
     wb_motor_set_position(motor[RBM].ID, set_joint_motor_angle_right[1]);
     wb_motor_set_position(motor[RFM].ID, -set_joint_motor_angle_right[0]);
     wb_motor_set_position(motor[LBM].ID, set_joint_motor_angle_left[1]);
@@ -152,13 +150,9 @@ void legs_Inversekinematics(fp32 *input_set_joint_motor_angle,double x, double y
         return angle;
     }
     behind_theta_1 = slides2angle(len_leg1, len_behind2end, len_leg2);
-        //printf("behind_theta_1=%f\n",behind_theta_1);
     behind_theta_2 = slides2angle(len_chassis, len_behind2end, len_front2end);
-
     front_theta_1 = slides2angle(len_leg1, len_front2end, len_leg2);
-        //printf("front_theta_1=%f\n",front_theta_1);
     front_theta_2 = slides2angle(len_chassis, len_front2end, len_behind2end);
-        //printf("front_theta_2=%f\n",front_theta_2);
 
     front_theta_sum = front_theta_1 + front_theta_2;
     behind_theta_sum = behind_theta_1 + behind_theta_2;
@@ -170,3 +164,76 @@ void legs_Inversekinematics(fp32 *input_set_joint_motor_angle,double x, double y
     
     //return input_set_joint_motor_angle;
 }
+
+/**
+  * @brief          关节电机限幅函数
+  * @param[in]      
+  * @retval         
+  */
+ void joint_motor_limit()
+ {
+    
+    //Right behind motor
+    if (set_joint_motor_angle_right[1] < -0.1)
+    set_joint_motor_angle_right[1] = -0.09999;
+    if (set_joint_motor_angle_right[1] > 1)
+    set_joint_motor_angle_right[1] = 0.99999;
+    //Left behind motor
+    if (set_joint_motor_angle_left[1] < -0.1)
+    set_joint_motor_angle_left[1] = -0.09999;
+    if (set_joint_motor_angle_left[1] > 1)
+    set_joint_motor_angle_left[1] = 0.99999;
+
+
+    //Right front motor
+    if (set_joint_motor_angle_right[0] < -0.1)
+    set_joint_motor_angle_right[0] = -0.09999;
+    if (set_joint_motor_angle_right[0] > 1)
+    set_joint_motor_angle_right[0] = 0.99999;
+    //Left front motor
+    if (set_joint_motor_angle_left[0] < -0.1)
+    set_joint_motor_angle_left[0] = -0.09999;
+    if (set_joint_motor_angle_left[0] > 1)
+    set_joint_motor_angle_left[0] = 0.99999;
+
+
+ }
+
+ /**
+  * @brief          跳跃任务实现
+  * @param[in]      
+  * @retval         
+  */
+ void chassis_jump_task()
+ {
+    
+    //跳跃demo，仅做展示，并不完善，待加入轨迹跟踪
+    if (keyboard.jump == 1 || time_start != 0)
+    {
+        if (time_start == 0)
+        {
+            printf("=========== start jump ==========\n");
+            time_start =  wb_robot_get_time();
+            set_y = 0.45; 
+
+        }
+
+        if (time_start != 0)
+        {
+            time_now = wb_robot_get_time();
+            if(time_now - time_start > 0.19)
+            {
+                printf("=========== jump over ==========\n");
+                set_y = 0.23;
+                time_start = 0; 
+                time_now = 0;
+            }
+
+
+        }
+
+
+    }
+
+
+ }

@@ -25,5 +25,7 @@ void chassis_wheel_init();
 void chassis_legs_init();
 void chassis_task();
 void legs_Inversekinematics(fp32 *input_set_joint_motor_angle,double x, double y, double len_chassis, double len_leg1, double len_leg2);
+void joint_motor_limit();
+void chassis_jump_task();
 
 #endif

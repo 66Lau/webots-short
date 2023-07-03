@@ -41,6 +41,7 @@ int main(int argc, char **argv) {
   /* necessary to initialize webots stuff */
   wb_robot_init();
   imu_init();
+  gyro_init();
   motor_init(0);
   position_sensor_init();
   remote_keyboard_init();
@@ -69,10 +70,12 @@ int main(int argc, char **argv) {
      *  double val = wb_distance_sensor_get_value(my_sensor);
      */
     printf("\n");
-    printf("robot thread has started\n");
+    printf("robot thread has started %f second\n",wb_robot_get_time());
+    
     remote_keyboard_control();
     imu_angle_detect();
     velocity_detect();
+    //gyro_speed_detect();
  
 
     chassis_init();
